@@ -1,13 +1,14 @@
 # UnSafeAPI
 A Simple RestAPI, Vulnerable by design fast to deploy and easy to use.
 This  API simulate a ticket management system and works with JSON files, instead database.
+You can use this API for Testing :) 
 
 ## Code Simples
 There are three main files:
 ### main.py
 
 The main page of the application including all the routes,..
-'''
+```
 @app.post("/create_user",response_model = schemas.UserInfoBase)
 def create_user(user: schemas.UserInfoBase):
     username =user.username
@@ -16,13 +17,13 @@ def create_user(user: schemas.UserInfoBase):
     with open("./users/"+json_file, "w") as outfile:
         outfile.write(json.dumps(user_obj))
     return 
-'''
+```
   
 ### schemas.py
  
 Schemas store all class objects
  
- '''
+```
 class UserInfoBase(BaseModel):
     username:str = Field(...,description= "username of the website", min_length=3,max_length=15, example= "user_test")
     fullname:str = Field(..., description= "username and last name", max_length=20, example= "John Doe")
@@ -31,7 +32,7 @@ class UserInfoBase(BaseModel):
     date_of_brith:str = Field(..., description  = " date of brith")
     max_open_ticket:int = Field(..., description="The maximmum ticket per user",max=5)
     ticket_list: list[TicketInfo] = Field(..., description="add Ticket")
-'''
+```
     
 ### jwt_token.py
     
