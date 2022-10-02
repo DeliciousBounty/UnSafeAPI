@@ -6,7 +6,6 @@ from tokenize import String
 from uuid import UUID
 import os
 from typing import Any, List, Union
-from xml.sax import default_parser_list
 from fastapi.openapi.models import Server
 from urllib import request, response
 import uvicorn
@@ -43,8 +42,6 @@ def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> 
     to_encode = {"exp": expires_delta, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, ALGORITHM)
 
-    #p = jwt.decode(encoded_jwt, JWT_SECRET_KEY, algorithms=[ALGORITHM])
-    #print("decoddeddd",p["sub"] )
     print("Token encoded", encoded_jwt)
     verify_jwt(encoded_jwt)
     return encoded_jwt
@@ -64,13 +61,10 @@ def verify_jwt(jwtoken: str) -> str:
 
 app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-#models.Base.metadata.create_all(bind=engine)
 
 #create user 
 @app.post("/create_user",response_model = schemas.UserInfoBase)
 def create_user(user: schemas.UserInfoBase):
-    #crud.create_access_token(user.username)
-    #user_obj = schemas.UserInfoBase(user)
     username =user.username
     json_file = username+".json"
     user_obj = json.loads(user.json())
@@ -90,7 +84,7 @@ def get_user(username, token: str = Depends(jwt_token.JWTBearer())):
                 jsonData = json.loads(fileData)
             return jsonData
         except:
-            raise HTTPException(status_code=404, detail="Error maybe usernot exisiting or corrupt file")
+            raise HTTPException(status_code=404, detail="Error maybe user not exists or corrupt file")
 
 @app.get("/token")
 async def create_token(username):
@@ -175,23 +169,3 @@ async def redirect(url: str):
      else:
         return False
 #@app.get("get_all_users")
-''''
-#get user's picture
-@app.get("/get_profile_picture}", response_model=schemas.UserInfo,  dependencies=[Depends(JWTBearer())])
-def get_user(username, db:Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
-    db_user = crud.get_user_by_username(db, username=username)
-    return db_user
-
-
-#set user info
-@app.post("/modify_info", dependencies=[Depends(JWTBearer())])
-def add_item( userphone:schemas.UserPayment ,db: Session = Depends(get_db)):
-    print('Id: ', userphone.id)
-    user_payment = crud.payment(db, phone_number=userphone.phonenumber, id =userphone.id)
-    if user_payment:
-        return user_payment
-       # raise HTTPException(status_code=200, detail=user_payment)
-    else:
-        raise HTTPException(status_code=400, detail="error")
-
-'''

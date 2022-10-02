@@ -1,8 +1,8 @@
 from typing import List, Union
 from pydantic import BaseModel,Field
 from sqlalchemy import Column, Integer, String
-#from main import Ticket
-
+import uuid
+from datetime import datetime
 
 class UserInfo:
     def __init__ (self, username, fullname,address, email, date_of_brith, ticket_list ):
@@ -25,11 +25,11 @@ class Ticket:
 
 #base schema for tickets
 class TicketInfo(BaseModel):
-    uuid:str = Field(..., description= "name of the item", min_length=3,max_length=20, example= "fruit") 
-    date:int = Field(..., description= "creation date", minimum=1, example= "1")
+    uuid:str = Field(..., description= "name of the item", min_length=3,max_length=20, example= uuid.uuid4()) 
+    date:int = Field(..., description= "creation date", minimum=1, example= datetime.utcnow())
     title:str = Field(..., description  ="Title of the ticket", min_length=5, max_length=15)
     text:str = Field(..., description  ="Message  inside  the ticket", min_length=5, max_length=50)
-    level:int = Field(..., description  ="Title of the ticket", min = 0, max=10)
+    level:int = Field(..., description  ="Title of the ticket", min = 1, max=10, example = 3)
 
     class Config:
         orm_mode = True

@@ -16,14 +16,13 @@ def create_user(user: schemas.UserInfoBase):
     with open("./users/"+json_file, "w") as outfile:
         outfile.write(json.dumps(user_obj))
     return 
-  '''
+'''
   
 ### schemas.py
  
 Schemas store all class objects
  
  '''
-### base schema for user data
 class UserInfoBase(BaseModel):
     username:str = Field(...,description= "username of the website", min_length=3,max_length=15, example= "user_test")
     fullname:str = Field(..., description= "username and last name", max_length=20, example= "John Doe")
@@ -32,11 +31,11 @@ class UserInfoBase(BaseModel):
     date_of_brith:str = Field(..., description  = " date of brith")
     max_open_ticket:int = Field(..., description="The maximmum ticket per user",max=5)
     ticket_list: list[TicketInfo] = Field(..., description="add Ticket")
-    '''
+'''
     
-    ### jwt_token.py
+### jwt_token.py
     
-    A simple file describing the JWT Token class.
+A simple file describing the JWT Token class.
     
     
     
@@ -45,7 +44,9 @@ class UserInfoBase(BaseModel):
 ```   
 git clone https://github.com/DeliciousBounty/UnSafeAPI.git
 pip3 install -r requirements.txt
+ uvicorn main:app --reload
 ```
+
 Then you need to ensure to create a minimum one user with the following endpoint
    ![image](https://user-images.githubusercontent.com/46570579/193453146-75f9d780-1a0c-421e-bae5-250c2ddb7bd6.png)
 
