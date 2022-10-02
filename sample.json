@@ -1,1 +1,1 @@
-{"username": "user_test", "fullname": "John Doe", "address": "string", "email": "string", "date_of_brith": "string", "ticket_list": {"uuid": "fruit", "date": 1, "title": "string", "text": "string", "level": 0}}
+{"username": "user_test", "fullname": "John Doe", "address": "string", "email": "string", "date_of_brith": "string", "max_open_ticket": 0, "ticket_list": [{"uuid": "fruit", "date": 1, "title": "string", "text": "string", "level": 0}, {"uuid": "dfsdfsfdsfsdfsdfs", "date": 1, "title": "string", "text": "string", "level": 0}]}

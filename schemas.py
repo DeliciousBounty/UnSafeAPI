@@ -29,7 +29,7 @@ class TicketInfo(BaseModel):
     date:int = Field(..., description= "creation date", minimum=1, example= "1")
     title:str = Field(..., description  ="Title of the ticket", min_length=5, max_length=15)
     text:str = Field(..., description  ="Message  inside  the ticket", min_length=5, max_length=50)
-    level:int = Field(..., description  ="Title of the ticket", max=10)
+    level:int = Field(..., description  ="Title of the ticket", min = 0, max=10)
 
     class Config:
         orm_mode = True
@@ -41,7 +41,8 @@ class UserInfoBase(BaseModel):
     address:str= Field(...,description = "address of the user")
     email:str = Field(...,description = "user's email")
     date_of_brith:str = Field(..., description  = " date of brith")
-    ticket_list: Union[TicketInfo, None] = Field(...,description = "list of user's ticket")
+    max_open_ticket:int = Field(..., description="The maximmum ticket per user",max=5)
+    ticket_list: list[TicketInfo] = Field(..., description="add Ticket")
         
 class Token(BaseModel):
     token:str
