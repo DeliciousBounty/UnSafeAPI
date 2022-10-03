@@ -1,5 +1,6 @@
 from typing import List, Union
-from pydantic import BaseModel,Field
+from xmlrpc.client import DateTime
+from pydantic import BaseModel,Field, validator
 from sqlalchemy import Column, Integer, String
 import uuid
 from datetime import datetime
@@ -25,11 +26,18 @@ class Ticket:
 
 #base schema for tickets
 class TicketInfo(BaseModel):
-    uuid:str = Field(..., description= "name of the item", min_length=3,max_length=20, example= uuid.uuid4()) 
-    date:int = Field(..., description= "creation date", minimum=1, example= datetime.utcnow())
+    uuid:str = Field(..., description= "name of the item", min_length=3,max_length=36, example= uuid.uuid4()) 
+    date:datetime = Field(..., description= "creation date", example= datetime.utcnow())
     title:str = Field(..., description  ="Title of the ticket", min_length=5, max_length=15)
     text:str = Field(..., description  ="Message  inside  the ticket", min_length=5, max_length=50)
-    level:int = Field(..., description  ="Title of the ticket", min = 1, max=10, example = 3)
+    level:int = Field(..., description  ="Title of the ticket", min = 1, max = 6, example = 3)
+
+    @validator("level")
+    @classmethod
+    def check_valid_level(cls,value):
+        if value > 5:
+            raise ValueError("Level value cannot be above 5.")
+        return value
 
     class Config:
         orm_mode = True
