@@ -1,1 +1,39 @@
-{"username": "nathan", "fullname": "  rrrr", "address": "string", "email": "string", "date_of_brith": "string", "max_open_ticket": 0, "ticket_list": [{"uuid": "fruit", "date": 1, "title": "string", "text": "string", "level": 0}, {"uuid": "61e1da31-920b-4708-a0ca-c894595abe95", "date": "2022-10-03T09:49:38.622788", "title": "string", "text": "string", "level": 3}, {"uuid": "0a4c406a-38c8-4741-a054-2efda1e43cee", "date": "2022-10-03T09:51:01.738990", "title": "string", "text": "string", "level": 1}, {"uuid": "0a4c406a-38c8-4741-a054-2efda1e43cef", "date": "2022-10-03T09:51:01.738990", "title": "string", "text": "string", "level": 0}]}
+{
+    "username": "nathan",
+    "fullname": "  rrrr",
+    "address": "string",
+    "user_type" : "user",
+    "email": "string",
+    "date_of_brith": "string",
+    "max_open_ticket": 0,
+    "ticket_list": [
+        {
+            "uuid": "fruit",
+            "date": 1,
+            "title": "string",
+            "text": "string",
+            "level": 0
+        },
+        {
+            "uuid": "61e1da31-920b-4708-a0ca-c894595abe95",
+            "date": "2022-10-03T09:49:38.622788",
+            "title": "string",
+            "text": "string",
+            "level": 3
+        },
+        {
+            "uuid": "0a4c406a-38c8-4741-a054-2efda1e43cee",
+            "date": "2022-10-03T09:51:01.738990",
+            "title": "string",
+            "text": "string",
+            "level": 1
+        },
+        {
+            "uuid": "0a4c406a-38c8-4741-a054-2efda1e43cef",
+            "date": "2022-10-03T09:51:01.738990",
+            "title": "string",
+            "text": "string",
+            "level": 0
+        }
+    ]
+}
