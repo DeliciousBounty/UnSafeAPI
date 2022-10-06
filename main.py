@@ -34,10 +34,17 @@ def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> 
         expires_delta = datetime.utcnow() + expires_delta
     else:
         expires_delta = datetime.utcnow() + delta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    
-    to_encode = {"exp": expires_delta, "sub": str(subject)}
+    try:
+        filename ="./users/"+subject+".json" 
+        with open(filename, "r") as file:
+            fileData  = file.read()
+            jsonData = json.loads(fileData)
+            user_type = jsonData["user_type"]
+    except:
+        user_type = "user" 
+    to_encode = {"exp": expires_delta, "sub": str(subject), "user_type": str(user_type)}
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, ALGORITHM)
-
+    
     print("Token encoded", encoded_jwt)
     verify_jwt(encoded_jwt)
     return encoded_jwt
@@ -46,7 +53,8 @@ def verify_jwt(jwtoken: str) -> str:
         isTokenValid: bool = False
         try:
             payload = jwt.decode(jwtoken, JWT_SECRET_KEY, algorithms=[ALGORITHM])
-            return payload["sub"]
+            # print(payload)
+            return payload["sub"],payload["user_type"]
         except Exception as e:
             print("Errorr", e)
             raise HTTPException(
@@ -72,7 +80,7 @@ def create_user(user: schemas.UserInfoBase):
 #get user info
 @app.get("/get_dashboard", response_model=schemas.UserInfoBase,  dependencies=[Depends(jwt_token.JWTBearer())])
 def get_user(username, token: str = Depends(jwt_token.JWTBearer())):
-    user = verify_jwt(token)
+    user, user_type = verify_jwt(token)
     if user and user !="":
         try:
             with open(user+".json", "r") as file:
@@ -92,9 +100,9 @@ async def create_token(username):
 #get all users only for admin
 @app.get("/get_users",  dependencies=[Depends(jwt_token.JWTBearer())])
 def get_all_users(token: str = Depends(jwt_token.JWTBearer())):
-    user = verify_jwt(token)
+    user, user_type  = verify_jwt(token)
     json_data= []
-    if user == "admin": # only if is admin
+    if user_type == "admin": # only if is admin
         for i in os.listdir('./users'):
             with open("./users/"+i, "r") as file:
                 fileData  = file.read()
@@ -113,7 +121,7 @@ async def create_token(username):
 #get user ticket 
 @app.get("/get_last_ticket", response_model=schemas.TicketInfo,  dependencies=[Depends(jwt_token.JWTBearer())])
 def get_user(token: str = Depends(jwt_token.JWTBearer())):
-     user = verify_jwt(token)
+     user, user_type  = verify_jwt(token)
      if user in [i.split(".")[0] for i in os.listdir('./users')]:
         with open("./users/"+user+".json", "r") as file:
             fileData = file.read()
@@ -127,7 +135,7 @@ def get_user(token: str = Depends(jwt_token.JWTBearer())):
 #remove ticket obscure endpoint
 @app.delete("/ticket",dependencies=[Depends(jwt_token.JWTBearer())],include_in_schema=False )
 def ticket_removing(token: str = Depends(jwt_token.JWTBearer())):
-    user = verify_jwt(token)
+    user, user_type  = verify_jwt(token)
     if user in [i.split(".")[0] for i in os.listdir('./users')]:
         os.remove("./users/"+user+".json")
         return {"message": "remove successfully"}
@@ -139,7 +147,7 @@ def ticket_removing(token: str = Depends(jwt_token.JWTBearer())):
 @app.post("/ticket", response_class=ORJSONResponse)
 def ticket_adding(ticket: schemas.TicketInfo, token: str = Depends(jwt_token.JWTBearer())):
     user_obj = json.loads(ticket.json())
-    user = verify_jwt(token)
+    user, user_type  = verify_jwt(token)
     if user in [i.split(".")[0] for i in os.listdir('./users')]:
         with open("./users/"+user+".json", "r") as outfile:
             fileData = outfile.read()
