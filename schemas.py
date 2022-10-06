@@ -23,15 +23,6 @@ class Ticket:
 		self.title = title
 		self.level = level
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    username: Union[str, None] = None
-    scopes: List[str] = []
-
 
  #validator for level
 # @validator("level")
@@ -54,24 +45,24 @@ class TicketInfo(BaseModel):
     text:str = Field(..., description = "Message  inside  the ticket", min_length=5, max_length=50, validator=False)
     level:int = Field(..., description = "Title of the ticket", min= 1, max=10, example = 1)
     
-    @classmethod
-    def unvalidated(__pydantic_cls__: "Type[Model]", **data: Any) -> TicketInfo:
-        for name, field in __pydantic_cls__.__fields__.items():
-            try:
-                data[name]
-            except KeyError:
-                if field.required:
-                    raise TypeError(f"Missing required keyword argument {name!r}")
-                if field.default is None:
-                    # deepcopy is quite slow on None
-                    value = None
-                else:
-                    value = deepcopy(field.default)
-                data[name] = value
-        self = __pydantic_cls__.__new__(__pydantic_cls__)
-        object.__setattr__(self, "__dict__", data)
-        object.__setattr__(self, "__fields_set__", set(data.keys()))
-        return self
+    # @classmethod
+    # def unvalidated(__pydantic_cls__: "Type[Model]", **data: Any) -> TicketInfo:
+    #     for name, field in __pydantic_cls__.__fields__.items():
+    #         try:
+    #             data[name]
+    #         except KeyError:
+    #             if field.required:
+    #                 raise TypeError(f"Missing required keyword argument {name!r}")
+    #             if field.default is None:
+    #                 # deepcopy is quite slow on None
+    #                 value = None
+    #             else:
+    #                 value = deepcopy(field.default)
+    #             data[name] = value
+    #     self = __pydantic_cls__.__new__(__pydantic_cls__)
+    #     object.__setattr__(self, "__dict__", data)
+    #     object.__setattr__(self, "__fields_set__", set(data.keys()))
+    #     return self
     # @validator("text",pre=True, always= False)
     # @classmethod # Optional, but your linter may like it.
     # def check_text_length(cls, value):
