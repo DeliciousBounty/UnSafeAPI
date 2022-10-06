@@ -183,3 +183,30 @@ async def redirect(url: str):
      else:
         return False
 #@app.get("get_all_users")
+
+
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Custom title",
+        version="2.5.0",
+        description="This is a very custom OpenAPI schema",
+        routes=app.routes, 
+         servers=[{"url":"http://127.0.0.1:8000"}]
+
+        
+    )
+    openapi_schema["info"]["x-logo"] = {
+        "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
+    }
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8081)
