@@ -1,19 +1,24 @@
 from datetime import datetime
 from datetime import timedelta as delta
+from optparse import TitledHelpFormatter
+from sqlite3 import Date
+from tokenize import String
 from uuid import UUID
 import os
 from typing import Any, List, Union
 from fastapi.openapi.models import Server
+from urllib import request, response
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException,Body, status, Query
+from sqlalchemy.orm import Session
+from fastapi import Depends, FastAPI, HTTPException,Body, status, Query, Security
 from fastapi.security import OAuth2PasswordBearer #security
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, SecurityScopes
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import RedirectResponse
 import json
+from typing import List, Union
 import schemas,jwt_token
 from jose import jwt
-from fastapi.responses import ORJSONResponse
 
 
 #from jwt_token import JWTBearer
@@ -28,6 +33,11 @@ REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days
 ALGORITHM = "HS256"
 JWT_SECRET_KEY = "abcd"  # should be kept secret
 JWT_REFRESH_SECRET_KEY = "ohhhtest"    # should be kept secret
+
+
+
+
+
 
 def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> str:
     if expires_delta is not None:
@@ -132,8 +142,8 @@ def get_user(token: str = Depends(jwt_token.JWTBearer())):
         raise HTTPException(status_code=400, detail = "user not exisiting")
 
 
-#remove ticket obscure endpoint
-@app.delete("/ticket",dependencies=[Depends(jwt_token.JWTBearer())],include_in_schema=False )
+#remove ticket
+@app.delete("/ticket",dependencies=[Depends(jwt_token.JWTBearer())] , include_in_schema=False)
 def ticket_removing(token: str = Depends(jwt_token.JWTBearer())):
     user, user_type  = verify_jwt(token)
     if user in [i.split(".")[0] for i in os.listdir('./users')]:
@@ -144,7 +154,7 @@ def ticket_removing(token: str = Depends(jwt_token.JWTBearer())):
 
 
 #add ticket to user
-@app.post("/ticket", response_class=ORJSONResponse)
+@app.post("/ticket")
 def ticket_adding(ticket: schemas.TicketInfo, token: str = Depends(jwt_token.JWTBearer())):
     user_obj = json.loads(ticket.json())
     user, user_type  = verify_jwt(token)
@@ -158,9 +168,9 @@ def ticket_adding(ticket: schemas.TicketInfo, token: str = Depends(jwt_token.JWT
                 jsonData["ticket_list"].append(user_obj)
                 with open("./users/"+user+".json", "w") as json_file:
                     json.dump(jsonData,json_file)
-                return ORJSONResponse({"message":"success"})
+                return {"message":"success"}
             else:
-                return ORJSONResponse({"message":"too much tickets for this user"})
+                return {"message":"too much tickets for this user"}
     else:
         raise HTTPException(status_code=400, detail = "user not exisiting")
 
