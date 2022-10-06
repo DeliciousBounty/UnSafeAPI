@@ -91,21 +91,36 @@ def create_user(user: schemas.UserInfoBase):
 @app.get("/get_dashboard", response_model=schemas.UserInfoBase,  dependencies=[Depends(jwt_token.JWTBearer())])
 def get_user(username, token: str = Depends(jwt_token.JWTBearer())):
     user, user_type = verify_jwt(token)
-    if user and user !="":
-        try:
-            with open(user+".json", "r") as file:
-                fileData  = file.read()
-                jsonData = json.loads(fileData)
-            return jsonData
-        except:
-            raise HTTPException(status_code=404, detail="Error maybe user not exists or corrupt file")
+    if user and user !="" :
+        if user == username:
+            try:
+                with open(user+".json", "r") as file:
+                    fileData  = file.read()
+                    jsonData = json.loads(fileData)
+                return jsonData
+            except:
+                raise HTTPException(status_code=404, detail="Error maybe user not exists or corrupt file")
+        else:
+            raise HTTPException(status_code=403, detail="Not allow to see this user")    
+    
 
 @app.get("/token")
 async def create_token(username):
     return {
          "token": create_access_token(username)
     }
+#get all users only for admin misconfig
+@app.get("/get_users", include_in_schema= False)
+def get_all_users():
+    json_data= []
+    # only if is admin
+    for i in os.listdir('./users'):
+        with open("./users/"+i, "r") as file:
+            fileData  = file.read()
+            jsonData = json.loads(fileData)
+            json_data.append(jsonData)
 
+    return json_data
 
 #get all users only for admin
 @app.get("/get_users",  dependencies=[Depends(jwt_token.JWTBearer())])
@@ -120,6 +135,10 @@ def get_all_users(token: str = Depends(jwt_token.JWTBearer())):
                 json_data.append(jsonData)
 
     return json_data
+
+
+
+
 
 @app.get("/token")
 async def create_token(username):

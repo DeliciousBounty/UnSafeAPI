@@ -43,7 +43,7 @@ class TicketInfo(BaseModel):
     title:str = Field(..., description = "Title of the ticket", min_length=5, max_length=15)
     validation = False
     text:str = Field(..., description = "Message  inside  the ticket", min_length=5, max_length=50, validator=False)
-    level:int = Field(..., description = "Title of the ticket", min= 1, max=10, example = 1)
+    level:int = Field(..., description = "Title of the ticket", min= 2, max=10, example = 1)
     
     # @classmethod
     # def unvalidated(__pydantic_cls__: "Type[Model]", **data: Any) -> TicketInfo:
