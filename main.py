@@ -1,23 +1,19 @@
 from datetime import datetime
 from datetime import timedelta as delta
-from optparse import TitledHelpFormatter
-from sqlite3 import Date
-from tokenize import String
 from uuid import UUID
 import os
 from typing import Any, List, Union
 from fastapi.openapi.models import Server
-from urllib import request, response
 import uvicorn
-from sqlalchemy.orm import Session
 from fastapi import Depends, FastAPI, HTTPException,Body, status, Query
 from fastapi.security import OAuth2PasswordBearer #security
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import RedirectResponse
 import json
 import schemas,jwt_token
 from jose import jwt
+from fastapi.responses import ORJSONResponse
 
 
 #from jwt_token import JWTBearer
@@ -128,8 +124,8 @@ def get_user(token: str = Depends(jwt_token.JWTBearer())):
         raise HTTPException(status_code=400, detail = "user not exisiting")
 
 
-#remove ticket
-@app.delete("/ticket",dependencies=[Depends(jwt_token.JWTBearer())] )
+#remove ticket obscure endpoint
+@app.delete("/ticket",dependencies=[Depends(jwt_token.JWTBearer())],include_in_schema=False )
 def ticket_removing(token: str = Depends(jwt_token.JWTBearer())):
     user = verify_jwt(token)
     if user in [i.split(".")[0] for i in os.listdir('./users')]:
@@ -140,7 +136,7 @@ def ticket_removing(token: str = Depends(jwt_token.JWTBearer())):
 
 
 #add ticket to user
-@app.post("/ticket")
+@app.post("/ticket", response_class=ORJSONResponse)
 def ticket_adding(ticket: schemas.TicketInfo, token: str = Depends(jwt_token.JWTBearer())):
     user_obj = json.loads(ticket.json())
     user = verify_jwt(token)
@@ -154,9 +150,9 @@ def ticket_adding(ticket: schemas.TicketInfo, token: str = Depends(jwt_token.JWT
                 jsonData["ticket_list"].append(user_obj)
                 with open("./users/"+user+".json", "w") as json_file:
                     json.dump(jsonData,json_file)
-                return {"message":"success"}
+                return ORJSONResponse({"message":"success"})
             else:
-                return {"message":"too much tickets for this user"}
+                return ORJSONResponse({"message":"too much tickets for this user"})
     else:
         raise HTTPException(status_code=400, detail = "user not exisiting")
 
